@@ -1,23 +1,32 @@
-import React, { Fragment } from 'react'
+import React, {
+  createContext,
+  lazy,
+  // Fragment,
+  Suspense
+} from 'react'
 import {
   BrowserRouter,
   Route,
   Switch
 } from 'react-router-dom'
-import { CssBaseline } from '@material-ui/core'
-import Home from './pages/Home'
-import Login from './pages/Login'
+import { CssBaseline, LinearProgress } from '@material-ui/core'
+
+const Home = lazy(() => import('./pages/Home'))
+const Login = lazy(() => import('./pages/Login'))
+export const ColorContext = createContext()
 
 const App = () => (
-  <Fragment>
+  <ColorContext.Provider value="Git">
     <CssBaseline />
     <BrowserRouter>
-      <Switch>
-        <Route path='/login' component={Login} />
-        <Route path='/' component={Home} />
-      </Switch>
+      <Suspense fallback={<LinearProgress />}>
+        <Switch>
+          <Route path='/login' component={Login} />
+          <Route path='/' component={Home} />
+        </Switch>
+      </Suspense>
     </BrowserRouter>
-  </Fragment>
+  </ColorContext.Provider>
 )
 
 export default App

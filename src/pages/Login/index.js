@@ -1,117 +1,115 @@
-import React, { PureComponent } from 'react'
-import styled from 'styled-components'
-import firebase from 'firebase/app'
-import 'firebase/auth'
+import React, {
+  useState,
+  useEffect,
+  Fragment
+} from 'react'
 import {
   Button,
   Grid,
   Typography
 } from '@material-ui/core'
+import styled from 'styled-components'
+import firebase from './../../service/firebase'
+import { ColorContext } from '../../App'
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyChPqMHhaaXpLIxp0tp3kneBBgRXmY_iqg',
-  authDomain: 'maffeezzaria.firebaseapp.com',
-  databaseURL: 'https://maffeezzaria.firebaseio.com',
-  projectId: 'maffeezzaria',
-  storageBucket: 'maffeezzaria.appspot.com',
-  messagingSenderId: '524028578544',
-  appId: '1:524028578544:web:1b4dd50e0cc453f4879035',
-  measurementId: 'G-HK355PRML7'
-}
-
-firebase.initializeApp(firebaseConfig)
-// firebase.analytics()
-
-class Login extends PureComponent {
-  state = {
+function Login () {
+  const [userInfo, setUserInfo] = useState({
     isUserLoggedIn: false,
     user: null
-  }
+  })
+  const { isUserLoggedIn, user } = userInfo
 
-  componentDidMount () {
+  useEffect(() => {
     firebase.auth().onAuthStateChanged(user => {
-      console.log('USUÁRIO LOGADO =>', user)
-      this.setState({
+      console.log('<= USUÁRIO LOGADO =>', user)
+      setUserInfo({
         isUserLoggedIn: !!user,
         user
       })
     })
-  }
+  }, [])
 
-  logout = () => {
+  const logout = () => {
     firebase.auth().signOut().then(() => {
       console.log(' <= NÃO HÁ LOGIN =>')
-      this.setState({
+      setUserInfo({
         isUserLoggedIn: false,
         user: null
       })
     })
   }
 
-  render () {
-    const { isUserLoggedIn, user } = this.state
-    return (
-      <Container>
-        <Grid
-          container
-          justify="center"
-          spacing={10}
-        >
-          <Grid item xs={12}>
-            <Typography
-              color="primary"
-              variant="h3"
-              align="center"
-            >
+  return (
+    <Container>
+      <Grid
+        container
+        justify="center"
+        spacing={10}
+      >
+        <Grid item xs={12}>
+          <Typography
+            color="primary"
+            variant="h3"
+            align="center"
+          >
               MAFFEEZZARIA
-            </Typography>
-          </Grid>
-          {!isUserLoggedIn && (
-            <Grid item xs={12} container justify="center">
-              <GitHubButton
-                fullWidth
-                variant="outlined"
-                color="secondary"
-                onClick={() => {
-                  const provider = new firebase.auth.GithubAuthProvider()
-                  firebase.auth().signInWithRedirect(provider)
-                }}
-              >
-                GitHub
-              </GitHubButton>
-              <GoogleButton
-                fullWidth
-                variant="outlined"
-                color="secondary"
-                onClick={() => {
-                  const provider = new firebase.auth.GoogleAuthProvider()
-                  firebase.auth().signInWithRedirect(provider)
-                }}
-              >
-                Google
-              </GoogleButton>
-            </Grid>
-          )}
-          <Grid item>
-            {isUserLoggedIn && (
-              <>
-                <h3>{user.displayName}</h3>
-                <h3>{user.email}</h3>
-                <Button
-                  size="large"
-                  variant="outlined"
-                  color="primary"
-                  onClick={this.logout}
-                >
-                  Sair
-                </Button>
-              </>
-            )}
-          </Grid>
+          </Typography>
         </Grid>
-      </Container>
-    )
-  }
+        {!isUserLoggedIn && (
+          <Grid item xs={12} container justify="center">
+            <ColorContext.Consumer>
+              {(color) => (
+                <Fragment>
+                  <GitHubButton
+                    fullWidth
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                      const provider = new firebase.auth.GithubAuthProvider()
+                      firebase.auth().signInWithRedirect(provider)
+                    }}
+                  >
+                GitHub {color}
+                  </GitHubButton>
+                  <GoogleButton
+                    fullWidth
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                      const provider = new firebase.auth.GoogleAuthProvider()
+                      firebase.auth().signInWithRedirect(provider)
+                    }}
+                  >
+                Google
+                  </GoogleButton>
+                </Fragment>
+              )}
+            </ColorContext.Consumer>
+          </Grid>
+        )}
+        <CenterGrid item>
+          {isUserLoggedIn && (
+            <>
+              <h3>{user.displayName}</h3>
+              <h3>{user.email}</h3>
+              {user.emailVerified && (
+                <h5>Usuário Autorizado</h5>
+              )}
+              <Button
+                style={{ marginTop: '2rem' }}
+                size="large"
+                variant="outlined"
+                color="primary"
+                onClick={logout}
+              >
+                Sair
+              </Button>
+            </>
+          )}
+        </CenterGrid>
+      </Grid>
+    </Container>
+  )
 }
 
 const Container = styled.div`
@@ -132,5 +130,12 @@ const GoogleButton = styled(Button)`
     text-transform: none;
   }
 `
+
+const CenterGrid = styled(Grid)`
+  && {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }`
 
 export default Login
