@@ -10,7 +10,6 @@ import {
 } from '@material-ui/core'
 import styled from 'styled-components'
 import firebase from './../../service/firebase'
-import { ColorContext } from '../../App'
 
 function Login () {
   const [userInfo, setUserInfo] = useState({
@@ -57,34 +56,30 @@ function Login () {
         </Grid>
         {!isUserLoggedIn && (
           <Grid item xs={12} container justify="center">
-            <ColorContext.Consumer>
-              {(color) => (
-                <Fragment>
-                  <GitHubButton
-                    fullWidth
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => {
-                      const provider = new firebase.auth.GithubAuthProvider()
-                      firebase.auth().signInWithRedirect(provider)
-                    }}
-                  >
-                GitHub {color}
-                  </GitHubButton>
-                  <GoogleButton
-                    fullWidth
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => {
-                      const provider = new firebase.auth.GoogleAuthProvider()
-                      firebase.auth().signInWithRedirect(provider)
-                    }}
-                  >
+            <Fragment>
+              <GitHubButton
+                fullWidth
+                variant="outlined"
+                color="secondary"
+                onClick={() => {
+                  const provider = new firebase.auth.GithubAuthProvider()
+                  firebase.auth().signInWithRedirect(provider)
+                }}
+              >
+                GitHub
+              </GitHubButton>
+              <GoogleButton
+                fullWidth
+                variant="outlined"
+                color="secondary"
+                onClick={() => {
+                  const provider = new firebase.auth.GoogleAuthProvider()
+                  firebase.auth().signInWithRedirect(provider)
+                }}
+              >
                 Google
-                  </GoogleButton>
-                </Fragment>
-              )}
-            </ColorContext.Consumer>
+              </GoogleButton>
+            </Fragment>
           </Grid>
         )}
         <CenterGrid item>
