@@ -1,6 +1,6 @@
 import React from 'react'
 import { CssBaseline } from '@material-ui/core'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, Route } from 'react-router-dom'
 import App from './App'
 import AuthProvider from './contexts/auth'
 
@@ -9,7 +9,7 @@ export default function Root () {
     <AuthProvider>
       <CssBaseline />
       <BrowserRouter>
-        <App />
+        <Route component={App} />
       </BrowserRouter>
     </AuthProvider>
   )

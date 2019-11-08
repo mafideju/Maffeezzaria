@@ -1,6 +1,5 @@
 import React, {
-  useState,
-  useEffect,
+  useContext,
   Fragment
 } from 'react'
 import {
@@ -9,34 +8,10 @@ import {
   Typography
 } from '@material-ui/core'
 import styled from 'styled-components'
-import firebase from './../../service/firebase'
+import { AuthContext } from './../../contexts/auth'
 
 function Login () {
-  const [userInfo, setUserInfo] = useState({
-    isUserLoggedIn: false,
-    user: null
-  })
-  const { isUserLoggedIn, user } = userInfo
-
-  useEffect(() => {
-    firebase.auth().onAuthStateChanged(user => {
-      console.log('<= USUÁRIO LOGADO =>', user)
-      setUserInfo({
-        isUserLoggedIn: !!user,
-        user
-      })
-    })
-  }, [])
-
-  const logout = () => {
-    firebase.auth().signOut().then(() => {
-      console.log(' <= NÃO HÁ LOGIN =>')
-      setUserInfo({
-        isUserLoggedIn: false,
-        user: null
-      })
-    })
-  }
+  const { githubLogin, googleLogin } = useContext(AuthContext)
 
   return (
     <Container>
@@ -54,54 +29,39 @@ function Login () {
               MAFFEEZZARIA
           </Typography>
         </Grid>
-        {!isUserLoggedIn && (
-          <Grid item xs={12} container justify="center">
-            <Fragment>
-              <GitHubButton
-                fullWidth
-                variant="outlined"
-                color="secondary"
-                onClick={() => {
-                  const provider = new firebase.auth.GithubAuthProvider()
-                  firebase.auth().signInWithRedirect(provider)
-                }}
-              >
+        <Grid item xs={12} container justify="center">
+          <Fragment>
+            <GitHubButton
+              fullWidth
+              variant="outlined"
+              color="secondary"
+              onClick={githubLogin}
+            >
                 GitHub
-              </GitHubButton>
-              <GoogleButton
-                fullWidth
-                variant="outlined"
-                color="secondary"
-                onClick={() => {
-                  const provider = new firebase.auth.GoogleAuthProvider()
-                  firebase.auth().signInWithRedirect(provider)
-                }}
-              >
+            </GitHubButton>
+            <GoogleButton
+              fullWidth
+              variant="outlined"
+              color="secondary"
+              onClick={googleLogin}
+            >
                 Google
-              </GoogleButton>
-            </Fragment>
-          </Grid>
-        )}
-        <CenterGrid item>
-          {isUserLoggedIn && (
-            <>
-              <h3>{user.displayName}</h3>
-              <h3>{user.email}</h3>
-              {user.emailVerified && (
-                <h5>Usuário Autorizado</h5>
-              )}
-              <Button
-                style={{ marginTop: '2rem' }}
-                size="large"
-                variant="outlined"
-                color="primary"
-                onClick={logout}
-              >
+            </GoogleButton>
+          </Fragment>
+        </Grid>
+        {/* <CenterGrid item>
+          <>
+            <Button
+              style={{ marginTop: '2rem' }}
+              size="large"
+              variant="outlined"
+              color="primary"
+              onClick={logout}
+            >
                 Sair
-              </Button>
-            </>
-          )}
-        </CenterGrid>
+            </Button>
+          </>
+        </CenterGrid> */}
       </Grid>
     </Container>
   )
@@ -126,11 +86,11 @@ const GoogleButton = styled(Button)`
   }
 `
 
-const CenterGrid = styled(Grid)`
-  && {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }`
+// const CenterGrid = styled(Grid)`
+//   && {
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//   }`
 
 export default Login
