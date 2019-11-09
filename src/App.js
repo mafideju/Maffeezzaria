@@ -3,21 +3,31 @@ import React, {
   Fragment,
   Suspense,
   useEffect,
-  useContext
+  useContext,
+  useState
 } from 'react'
 import {
   Route,
-  Switch
+  Switch,
+  Redirect
 } from 'react-router-dom'
-import { LinearProgress } from '@material-ui/core'
-import firebase from './service/firebase'
+import {
+  LinearProgress,
+  CircularProgress,
+  Grid
+} from '@material-ui/core'
+import PropTypes from 'prop-types'
 import { AuthContext } from './contexts/auth'
+import firebase from './service/firebase'
 
 const Home = lazy(() => import('./pages/Home'))
 const Login = lazy(() => import('./pages/Login'))
 
-const App = () => {
-  const { setUserInfo } = useContext(AuthContext)
+const App = ({ location }) => {
+  const { userInfo, setUserInfo, logout } = useContext(AuthContext)
+  const [checkUserIn, setCheckUserIn] = useState(false)
+  const { isUserLoggedIn } = userInfo
+
   useEffect(() => {
     firebase
       .auth()
@@ -27,9 +37,32 @@ const App = () => {
           isUserLoggedIn: !!user,
           user
         })
+        setCheckUserIn(true)
       })
-      // eslint-disable-next-line
+    window.logout = logout
+    // eslint-disable-next-line
   }, [])
+
+  if (!checkUserIn) {
+    return (
+      <Grid container justify="center" style={{ marginTop: '10rem' }}>
+        <Grid item>
+          <CircularProgress />
+        </Grid>
+      </Grid>
+    )
+  }
+
+  if (isUserLoggedIn) {
+    if (location.pathname === '/login') {
+      return <Redirect to='/' />
+    }
+  } else {
+    if (location.pathname !== '/login') {
+      return <Redirect to='/login' />
+    }
+  }
+
   return (
     <Fragment>
       <Suspense fallback={<LinearProgress />}>
@@ -40,6 +73,18 @@ const App = () => {
       </Suspense>
     </Fragment>
   )
+}
+
+App.defaultProps = {
+  location: {
+    pathname: ''
+  }
+}
+
+App.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired
+  })
 }
 
 export default App
