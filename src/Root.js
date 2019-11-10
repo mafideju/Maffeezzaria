@@ -1,10 +1,11 @@
 import React from 'react'
-import { CssBaseline } from '@material-ui/core'
 import { BrowserRouter, Route } from 'react-router-dom'
+import { hot } from 'react-hot-loader'
+import { CssBaseline } from '@material-ui/core'
 import App from './App'
 import AuthProvider from './contexts/auth'
 
-export default function Root () {
+const Root = () => {
   return (
     <AuthProvider>
       <CssBaseline />
@@ -14,3 +15,5 @@ export default function Root () {
     </AuthProvider>
   )
 }
+
+export default hot(module)(Root)
