@@ -24,8 +24,8 @@ const Home = lazy(() => import('./pages/Home'))
 const Login = lazy(() => import('./pages/Login'))
 
 const App = ({ location }) => {
-  const { userInfo, setUserInfo, logout } = useContext(AuthContext)
   const [checkUserIn, setCheckUserIn] = useState(false)
+  const { userInfo, setUserInfo, logout } = useContext(AuthContext)
   const { isUserLoggedIn } = userInfo
 
   useEffect(() => {
